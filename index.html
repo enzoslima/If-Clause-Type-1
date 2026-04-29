@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz - If Clause Type 1</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background: #46178f;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ===== TELA INICIAL ===== */
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #46178f 0%, #7b2ff7 50%, #46178f 100%);
+            animation: bgShift 6s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        @keyframes bgShift {
+            0%, 100% { background: linear-gradient(135deg, #46178f 0%, #7b2ff7 50%, #46178f 100%); }
+            50% { background: linear-gradient(135deg, #7b2ff7 0%, #46178f 50%, #7b2ff7 100%); }
+        }
+
+        #start-screen::before {
+            content: '';
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            top: -50px;
+            right: -50px;
+        }
+
+        #start-screen::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            bottom: -30px;
+            left: -30px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .game-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 4px 4px 0px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .game-title span {
+            display: inline-block;
+            animation: bounce 0.6s ease infinite alternate;
+        }
+
+        .game-title span:nth-child(2) { animation-delay: 0.1s; }
+        .game-title span:nth-child(3) { animation-delay: 0.2s; }
+        .game-title span:nth-child(4) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        .game-subtitle {
+            font-size: 1.8rem;
+            color: #ffd700;
+            font-weight: 700;
+            text-shadow: 2px 2px 0px rgba(0,0,0,0.3);
+            margin-bottom: 5px;
+        }
+
+        .game-description {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.7);
+            margin-top: 10px;
+        }
+
+        .diamond-decoration {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .diamond {
+            width: 20px;
+            height: 20px;
+            transform: rotate(45deg);
+            animation: sparkle 1.5s ease-in-out infinite;
+        }
+
+        .diamond:nth-child(1) { background: #e21b3c; animation-delay: 0s; }
+        .diamond:nth-child(2) { background: #1368ce; animation-delay: 0.3s; }
+        .diamond:nth-child(3) { background: #d89e00; animation-delay: 0.6s; }
+        .diamond:nth-child(4) { background: #26890c; animation-delay: 0.9s; }
+
+        @keyframes sparkle {
+            0%, 100% { opacity: 1; transform: rotate(45deg) scale(1); }
+            50% { opacity: 0.5; transform: rotate(45deg) scale(0.7); }
+        }
+
+        .start-btn {
+            padding: 18px 60px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #46178f;
+            background: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 0px #ccc, 0 10px 30px rgba(0,0,0,0.3);
+            animation: fadeInUp 1s ease 0.5s both;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 9px 0px #ccc, 0 15px 40px rgba(0,0,0,0.4);
+            background: #ffd700;
+        }
+
+        .start-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0px #ccc, 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        /* ===== TELA DO QUIZ ===== */
+        #quiz-screen {
+            display: none;
+            min-height: 100vh;
+            padding: 20px;
+            background: #46178f;
+        }
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+        }
+
+        .question-counter {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 25px;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .score-display {
+            background: rgba(255,255,255,0.15);
+            padding: 10px 25px;
+            border-radius: 25px;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .score-display i {
+            color: #ffd700;
+        }
+
+        /* Timer Bar */
+        .timer-bar-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto 25px auto;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #e21b3c, #ffd700, #26890c);
+            border-radius: 50px;
+            transition: width 0.3s linear;
+            width: 100%;
+        }
+
+        .timer-bar.warning {
+            background: linear-gradient(90deg, #e21b3c, #ff6b35);
+        }
+
+        .timer-text {
+            text-align: center;
+            color: #fff;
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
+
+        /* Question Card */
+        .question-card {
+            background: #fff;
+            border-radius: 15px;
+            padding: 35px 40px;
+            max-width: 900px;
+            margin: 0 auto 30px auto;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: scale(0.8) translateY(-30px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .question-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        /* Options Grid */
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .option-btn {
+            padding: 22px 20px;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 0px rgba(0,0,0,0.2);
+        }
+
+        .option-btn:hover:not(.disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 7px 0px rgba(0,0,0,0.2);
+            filter: brightness(1.1);
+        }
+
+        .option-btn:active:not(.disabled) {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px rgba(0,0,0,0.2);
+        }
+
+        .option-btn.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .option-btn:nth-child(1) { background: #e21b3c; }
+        .option-btn:nth-child(2) { background: #1368ce; }
+        .option-btn:nth-child(3) { background: #d89e00; }
+        .option-btn:nth-child(4) { background: #26890c; }
+
+        .option-shape {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .shape-triangle {
+            width: 0;
+            height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-bottom: 30px solid rgba(255,255,255,0.4);
+        }
+
+        .shape-diamond {
+            width: 24px;
+            height: 24px;
+            background: rgba(255,255,255,0.4);
+            transform: rotate(45deg);
+        }
+
+        .shape-circle {
+            width: 28px;
+            height: 28px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 50%;
+        }
+
+        .shape-square {
+            width: 26px;
+            height: 26px;
+            background: rgba(255,255,255,0.4);
+        }
+
+        /* Feedback de Resposta */
+        .option-btn.correct {
+            background: #26890c !important;
+            animation: correctPulse 0.5s ease;
+        }
+
+        @keyframes correctPulse {
+            0% { transform: scale(1); }
+            30% { transform: scale(1.05); }
+            60% { transform: scale(0.98); }
+            100% { transform: scale(1); }
+        }
+
+        .option-btn.correct::after {
+            content: '✓';
+            position: absolute;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: 900;
+            animation: checkMark 0.4s ease;
+        }
+
+        @keyframes checkMark {
+            from { opacity: 0; transform: scale(0) rotate(-180deg); }
+            to { opacity: 1; transform: scale(1) rotate(0deg); }
+        }
+
+        .option-btn.wrong {
+            background: #e21b3c !important;
+            animation: wrongShake 0.5s ease;
+        }
+
+        @keyframes wrongShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-10px); }
+            80% { transform: translateX(10px); }
+        }
+
+        .option-btn.wrong::after {
+            content: '✗';
+            position: absolute;
+            right: 20px;
+            font-size: 2rem;
+            font-weight: 900;
+            animation: checkMark 0.4s ease;
+        }
+
+        .option-btn.dimmed {
+            opacity: 0.3;
+        }
+
+        /* ===== TELA DE RESULTADO ===== */
+        #result-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #46178f, #7b2ff7);
+            padding: 20px;
+        }
+
+        .result-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 50px 60px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.3);
+            animation: slideIn 0.8s ease;
+            max-width: 550px;
+            width: 100%;
+        }
+
+        .result-emoji {
+            font-size: 5rem;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease infinite alternate;
+        }
+
+        .result-title {
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 4rem;
+            font-weight: 900;
+            color: #46178f;
+            margin: 15px 0;
+        }
+
+        .result-detail {
+            font-size: 1.1rem;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .result-bar-container {
+            width: 100%;
+            background: #eee;
+            border-radius: 50px;
+            height: 20px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .result-bar {
+            height: 100%;
+            border-radius: 50px;
+            transition: width 1.5s ease;
+            width: 0;
+        }
+
+        .result-bar.excellent { background: linear-gradient(90deg, #26890c, #4caf50); }
+        .result-bar.good { background: linear-gradient(90deg, #d89e00, #ffd700); }
+        .result-bar.average { background: linear-gradient(90deg, #ff9800, #ffc107); }
+        .result-bar.poor { background: linear-gradient(90deg, #e21b3c, #ff6b6b); }
+
+        .result-message {
+            font-size: 1rem;
+            color: #888;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .restart-btn {
+            margin-top: 30px;
+            padding: 16px 50px;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #fff;
+            background: #46178f;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 0px #2e0f5e;
+        }
+
+        .restart-btn:hover {
+            background: #7b2ff7;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 0px #2e0f5e;
+        }
+
+        .restart-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px #2e0f5e;
+        }
+
+        /* Confetti */
+        .confetti-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            overflow: hidden;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            top: -20px;
+            width: 12px;
+            height: 12px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% { 
+                transform: translateY(0) rotate(0deg); 
+                opacity: 1;
+            }
+            100% { 
+                transform: translateY(100vh) rotate(720deg); 
+                opacity: 0;
+            }
+        }
+
+        /* Streak indicator */
+        .streak-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: 900;
+            color: #ffd700;
+            text-shadow: 3px 3px 0px rgba(0,0,0,0.3);
+            z-index: 100;
+            pointer-events: none;
+            animation: streakAnim 1s ease forwards;
+        }
+
+        @keyframes streakAnim {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+            30% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            70% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; transform: translate(-50%, -60%) scale(0.8); }
+        }
+
+        /* Points popup */
+        .points-popup {
+            position: fixed;
+            top: 40%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            z-index: 99;
+            pointer-events: none;
+            animation: pointsAnim 1s ease forwards;
+        }
+
+        @keyframes pointsAnim {
+            0% { opacity: 0; transform: translate(-50%, -50%) translateY(0); }
+            30% { opacity: 1; }
+            100% { opacity: 0; transform: translate(-50%, -50%) translateY(-60px); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .game-title { font-size: 2.5rem; }
+            .game-subtitle { font-size: 1.3rem; }
+            .options-grid { grid-template-columns: 1fr; }
+            .question-text { font-size: 1.2rem; }
+            .option-btn { font-size: 1rem; padding: 18px 15px; }
+            .question-card { padding: 25px 20px; }
+            .result-card { padding: 35px 25px; }
+            .result-score { font-size: 3rem; }
+            .quiz-header { flex-direction: row; gap: 10px; padding: 10px; }
+        }
+
+        @media (max-width: 480px) {
+            .game-title { font-size: 2rem; letter-spacing: 2px; }
+            .game-subtitle { font-size: 1.1rem; }
+            .start-btn { padding: 15px 40px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TELA INICIAL -->
+    <div id="start-screen">
+        <div class="logo-container">
+            <div class="game-title">
+                <span>Q</span><span>U</span><span>I</span><span>Z</span>
+            </div>
+            <div class="game-subtitle">If Clause — Type 1</div>
+            <div class="game-description">First Conditional • 20 Questions</div>
+        </div>
+        <div class="diamond-decoration">
+            <div class="diamond"></div>
+            <div class="diamond"></div>
+            <div class="diamond"></div>
+            <div class="diamond"></div>
+        </div>
+        <button class="start-btn" onclick="startQuiz()">JOGAR!</button>
+    </div>
+
+    <!-- TELA DO QUIZ -->
+    <div id="quiz-screen">
+        <div class="quiz-header">
+            <div class="question-counter" id="question-counter">1 / 20</div>
+            <div class="score-display" id="score-display">⭐ 0</div>
+        </div>
+
+        <div class="timer-text" id="timer-text">20</div>
+        <div class="timer-bar-container">
+            <div class="timer-bar" id="timer-bar"></div>
+        </div>
+
+        <div class="question-card" id="question-card">
+            <div class="question-text" id="question-text"></div>
+        </div>
+
+        <div class="options-grid" id="options-grid"></div>
+    </div>
+
+    <!-- TELA DE RESULTADO -->
+    <div id="result-screen">
+        <div class="result-card">
+            <div class="result-emoji" id="result-emoji">🏆</div>
+            <div class="result-title" id="result-title">Parabéns!</div>
+            <div class="result-score" id="result-score">0</div>
+            <div class="result-detail" id="result-detail"></div>
+            <div class="result-bar-container">
+                <div class="result-bar" id="result-bar"></div>
+            </div>
+            <div class="result-message" id="result-message"></div>
+            <button class="restart-btn" onclick="restartQuiz()">JOGAR NOVAMENTE</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "If it _____ tomorrow, we will stay at home.",
+                options: ["rains", "will rain", "rained", "raining"],
+                correct: 0
+            },
+            {
+                question: "She will pass the exam if she _____ hard.",
+                options: ["will study", "studied", "studies", "studying"],
+                correct: 2
+            },
+            {
+                question: "If you _____ the button, the machine will start.",
+                options: ["will press", "pressing", "pressed", "press"],
+                correct: 3
+            },
+            {
+                question: "They will miss the bus if they _____ hurry.",
+                options: ["won't", "doesn't", "don't", "didn't"],
+                correct: 2
+            },
+            {
+                question: "If he _____ the truth, everyone will be angry.",
+                options: ["tell", "tells", "will tell", "told"],
+                correct: 1
+            },
+            {
+                question: "We _____ to the beach if the weather is nice.",
+                options: ["go", "goes", "went", "will go"],
+                correct: 3
+            },
+            {
+                question: "If I _____ enough money, I will buy a new car.",
+                options: ["will have", "have", "had", "having"],
+                correct: 1
+            },
+            {
+                question: "You will get fat if you _____ too much junk food.",
+                options: ["will eat", "ate", "eat", "eating"],
+                correct: 2
+            },
+            {
+                question: "If she _____ late, the teacher will be upset.",
+                options: ["arrived", "will arrive", "arriving", "arrives"],
+                correct: 3
+            },
+            {
+                question: "If the students study, they _____ good grades.",
+                options: ["get", "got", "will get", "getting"],
+                correct: 2
+            },
+            {
+                question: "I _____ you if I need your help.",
+                options: ["called", "call", "will call", "calling"],
+                correct: 2
+            },
+            {
+                question: "If we _____ now, we will arrive on time.",
+                options: ["will leave", "left", "leaving", "leave"],
+                correct: 3
+            },
+            {
+                question: "If it _____ snowing, the roads will be dangerous.",
+                options: ["will keep", "keeps", "kept", "keeping"],
+                correct: 1
+            },
+            {
+                question: "He will be disappointed if he _____ the job.",
+                options: ["don't get", "won't get", "didn't get", "doesn't get"],
+                correct: 3
+            },
+            {
+                question: "If you _____ your vegetables, you will grow strong.",
+                options: ["will eat", "ate", "eating", "eat"],
+                correct: 3
+            },
+            {
+                question: "The plants will die if you _____ them.",
+                options: ["won't water", "don't water", "didn't water", "not watering"],
+                correct: 1
+            },
+            {
+                question: "If Mary _____ her homework, the teacher will punish her.",
+                options: ["won't do", "don't do", "doesn't do", "not doing"],
+                correct: 2
+            },
+            {
+                question: "If the dog _____ hungry, it will bark.",
+                options: ["will be", "was", "is", "being"],
+                correct: 2
+            },
+            {
+                question: "I will be very happy if I _____ the competition.",
+                options: ["will win", "won", "winning", "win"],
+                correct: 3
+            },
+            {
+                question: "If you _____ to music, you will feel more relaxed.",
+                options: ["will listen", "listened", "listen", "listening"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let streak = 0;
+        let timer;
+        let timeLeft;
+        const TIME_LIMIT = 20;
+        let shuffledQuestions = [];
+
+        function shuffleArray(arr) {
+            const a = [...arr];
+            for (let i = a.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [a[i], a[j]] = [a[j], a[i]];
+            }
+            return a;
+        }
+
+        function startQuiz() {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'block';
+            currentQuestion = 0;
+            score = 0;
+            correctAnswers = 0;
+            streak = 0;
+            shuffledQuestions = shuffleArray(questions);
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const q = shuffledQuestions[currentQuestion];
+            document.getElementById('question-counter').textContent = `${currentQuestion + 1} / ${shuffledQuestions.length}`;
+            document.getElementById('score-display').textContent = `⭐ ${score}`;
+
+            const questionCard = document.getElementById('question-card');
+            questionCard.style.animation = 'none';
+            questionCard.offsetHeight;
+            questionCard.style.animation = 'slideIn 0.5s ease';
+
+            document.getElementById('question-text').textContent = q.question;
+
+            const shapes = [
+                '<div class="shape-triangle"></div>',
+                '<div class="shape-diamond"></div>',
+                '<div class="shape-circle"></div>',
+                '<div class="shape-square"></div>'
+            ];
+
+            const grid = document.getElementById('options-grid');
+            grid.innerHTML = '';
+
+            q.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = `<div class="option-shape">${shapes[i]}</div><span>${opt}</span>`;
+                btn.onclick = () => selectAnswer(i);
+                grid.appendChild(btn);
+            });
+
+            startTimer();
+        }
+
+        function startTimer() {
+            timeLeft = TIME_LIMIT;
+            const timerBar = document.getElementById('timer-bar');
+            const timerText = document.getElementById('timer-text');
+            timerBar.style.width = '100%';
+            timerBar.classList.remove('warning');
+            timerText.textContent = timeLeft;
+
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft -= 0.1;
+                const pct = (timeLeft / TIME_LIMIT) * 100;
+                timerBar.style.width = pct + '%';
+
+                if (timeLeft <= 5) {
+                    timerBar.classList.add('warning');
+                }
+
+                timerText.textContent = Math.ceil(timeLeft);
+
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timerText.textContent = '0';
+                    timeUp();
+                }
+            }, 100);
+        }
+
+        function timeUp() {
+            streak = 0;
+            const btns = document.querySelectorAll('.option-btn');
+            btns.forEach((btn, i) => {
+                btn.classList.add('disabled');
+                if (i === shuffledQuestions[currentQuestion].correct) {
+                    btn.classList.add('correct');
+                } else {
+                    btn.classList.add('dimmed');
+                }
+            });
+
+            setTimeout(nextQuestion, 1800);
+        }
+
+        function selectAnswer(index) {
+            clearInterval(timer);
+            const q = shuffledQuestions[currentQuestion];
+            const btns = document.querySelectorAll('.option-btn');
+
+            btns.forEach(btn => btn.classList.add('disabled'));
+
+            if (index === q.correct) {
+                btns[index].classList.add('correct');
+                streak++;
+                correctAnswers++;
+
+                // Points based on time left
+                let points = Math.round(100 + (timeLeft / TIME_LIMIT) * 900);
+                if (streak >= 5) points = Math.round(points * 1.5);
+                else if (streak >= 3) points = Math.round(points * 1.2);
+
+                score += points;
+                document.getElementById('score-display').textContent = `⭐ ${score}`;
+
+                showPointsPopup(`+${points}`);
+
+                if (streak === 3) showStreakPopup('🔥 3 seguidas!');
+                else if (streak === 5) showStreakPopup('⚡ 5 seguidas!');
+                else if (streak === 10) showStreakPopup('💥 10 seguidas!');
+
+                // Dim wrong answers
+                btns.forEach((btn, i) => {
+                    if (i !== q.correct) btn.classList.add('dimmed');
+                });
+
+            } else {
+                btns[index].classList.add('wrong');
+                btns[q.correct].classList.add('correct');
+                streak = 0;
+
+                btns.forEach((btn, i) => {
+                    if (i !== index && i !== q.correct) btn.classList.add('dimmed');
+                });
+            }
+
+            setTimeout(nextQuestion, 2000);
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < shuffledQuestions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showPointsPopup(text) {
+            const popup = document.createElement('div');
+            popup.className = 'points-popup';
+            popup.textContent = text;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1000);
+        }
+
+        function showStreakPopup(text) {
+            const popup = document.createElement('div');
+            popup.className = 'streak-popup';
+            popup.textContent = text;
+            document.body.appendChild(popup);
+            setTimeout(() => popup.remove(), 1200);
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'flex';
+
+            const pct = Math.round((correctAnswers / shuffledQuestions.length) * 100);
+            let emoji, title, barClass, message;
+
+            if (pct >= 90) {
+                emoji = '🏆';
+                title = 'Excelente!';
+                barClass = 'excellent';
+                message = 'You are a First Conditional master! Amazing job!';
+            } else if (pct >= 70) {
+                emoji = '🌟';
+                title = 'Muito Bom!';
+                barClass = 'good';
+                message = 'Great work! You really understand If Clause Type 1!';
+            } else if (pct >= 50) {
+                emoji = '💪';
+                title = 'Bom Trabalho!';
+                barClass = 'average';
+                message = 'Not bad! Keep practicing to improve your score!';
+            } else {
+                emoji = '📚';
+                title = 'Continue Estudando!';
+                barClass = 'poor';
+                message = 'Review the First Conditional rules and try again!';
+            }
+
+            document.getElementById('result-emoji').textContent = emoji;
+            document.getElementById('result-title').textContent = title;
+            document.getElementById('result-score').textContent = score + ' pts';
+            document.getElementById('result-detail').textContent =
+                `Você acertou ${correctAnswers} de ${shuffledQuestions.length} perguntas (${pct}%)`;
+            document.getElementById('result-message').textContent = message;
+
+            const bar = document.getElementById('result-bar');
+            bar.className = 'result-bar ' + barClass;
+            setTimeout(() => { bar.style.width = pct + '%'; }, 300);
+
+            if (pct >= 70) launchConfetti();
+        }
+
+        function launchConfetti() {
+            const container = document.createElement('div');
+            container.className = 'confetti-container';
+            document.body.appendChild(container);
+
+            const colors = ['#e21b3c', '#1368ce', '#d89e00', '#26890c', '#ff6b6b', '#ffd700', '#7b2ff7', '#fff'];
+
+            for (let i = 0; i < 80; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + '%';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.width = (Math.random() * 10 + 6) + 'px';
+                piece.style.height = (Math.random() * 10 + 6) + 'px';
+                piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                piece.style.animationDelay = (Math.random() * 2) + 's';
+                if (Math.random() > 0.5) piece.style.borderRadius = '50%';
+                container.appendChild(piece);
+            }
+
+            setTimeout(() => container.remove(), 5000);
+        }
+
+        function restartQuiz() {
+            document.getElementById('result-screen').style.display = 'none';
+            document.getElementById('start-screen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
